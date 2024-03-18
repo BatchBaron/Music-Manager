@@ -22,12 +22,12 @@ exit /b
     call :downloadSong %2 %3
     exit /b
 ) else if /I "%option%"=="-r" (
-    call :playRandomSong
+    call :playRandomSong %2
     exit /b
 )
 
 if /I "%option%"=="-p" (
-  call :playMusic %~2
+  call :playMusic %~2 %~3
   exit /b
 )
 
@@ -41,56 +41,55 @@ set "songName=%~1"
     echo No song was provided!
     exit /b
 )
-@REM  if not exist "%musicPath%" (
-@REM     echo Provided music does not exist! Please provide correct path.
-@REM     exit /b
-@REM )
+if not "%~2"=="" (
+    set "musicFolder=%~2"
+)
+ if not exist "%musicFolder%" (
+        echo Couldn't find folder named '%musicFolder%'.
+    exit /b
+)
 
 for %%a in ("%musicFolder%\*.mp3") do (
     set "current=%%~nxa"
-    @REM echo currently at !current!
     if "!current:%songName%=!" neq "!current!" (
         echo Playing song %%a
         start /b "" "%%a"
         exit /b
     )
 )
-echo Song not found: %songName%
+echo Couldn't find song: '%songName%'
 exit /b
 
 :loopDirectory
-if not exist %musicFolder% (
-    echo path %musicFolder%
-  set "newMusicFolderPath=%~1"
-  if not exist !newMusicFolderPath! (
-    echo Couldn't find folder at path: !newMusicFolderPath!.
-    exit /b
-  )
-  set musicCount=0
-  for %%b in ("!newMusicFolderPath!\*.mp3") do (
-        set /a musicCount+=1
-  )
-    if !musicCount! equ 0 (
-        echo Couldn't find any song in folder !newMusicFolderPath!.
-        exit /b
-    )
-echo Listing all songs in the directory:
-    for %%a in ("!newMusicFolderPath!\*.mp3") do (
-        echo %%~nxa
-    )
-    exit /b
-
+set "directoryPath=%~1"
+if "%directoryPath%"=="" (
+    set "directoryPath=%musicFolder%"
 )
- echo Listing all songs in the directory:
-    for %%a in ("%musicFolder%\*.mp3") do (
-        echo %%~nxa
-    )
+
+if not exist %directoryPath% (
+    echo Couldn't find folder named '%directoryPath%'.
     exit /b
+)
+
+set songCount=0
+for %%a in ("%directoryPath%\*.mp3") do (
+    set /a songCount+=1
+)
+
+if !songCount! equ 0 (
+    echo couldn't find any songs in %directoryPath%.
+    exit /b
+)
+
+for %%b in ("%directoryPath%\*.mp3") do (
+    echo %%~nxb
+)
+exit /b
 
 :downloadSong 
 
 if not exist "%~dp0DownloadMP3.exe" (
-    echo Couldn't find DownloadMP3.exe! Make sure you place it in the same folder as the batch script.
+    echo Couldn't find DownloadMP3.exe. Make it's place in the same folder as batch file!
     exit /b
 )
 if "%2"=="" (
@@ -101,29 +100,55 @@ if "%2"=="" (
 exit /b
 
 :playRandomSong
-set songsCount=0
+if not "%~1"=="" (
+    set "musicFolder=%~1"
+)
+
+if not exist %musicFolder% (
+   echo Couldn't find Folder named '%musicFolder%'.
+    exit /b
+ )
+set songCount=0
  for %%a in ("%musicFolder%\*.mp3") do (
-        set /a songsCount +=1
+        set /a songCount+=1
     )   
 
-SET /A "selectedSong=1 + %RANDOM% %% %songsCount%"
-set songsCount=0
+ if %songCount% equ 0 (
+        echo There are no songs in this folder! %musicFolder%
+    )
+
+SET /A "selectedSong=1 + %RANDOM% %% %songCount%"
+set songCount=0
      for %%b in ("%musicFolder%\*.mp3") do (
-        set /a songsCount+=1
-        if !songsCount! equ %selectedSong% (
-            echo playing random song!
+        set /a songCount+=1
+        if !songCount! equ %selectedSong% (
+            echo Playing: %%~nxb
              start /b "" "%%b"
         exit /b
         )
     )
     exit /b
 
-
 :displayHelp
 echo Usage: 
-echo -list, -l: List all songs in the directory
-echo -p [song name]: Play the specified song
-echo -h, --help: Display this help message
-echo -d [directory] [YouTube link]: Allows you to download a YouTube song and save it to the destined folder.
-echo -r: Allows you to play random song in given directory
+echo.
+echo -list, -l [directory_path]           List all songs in the specified directory.
+echo                     Example: music -list C\Users\bob\songs\
+echo.
+echo -p ^<song_name^> [directory_path]      Play the specified song.
+echo                     Example: music -p  "Timmy Trumpet & KSHMR - Toca" C:\Users\bob\Songs
+echo.
+echo -d [directory_path] ^<YouTube_link^>       
+echo                     Download a YouTube song and save it to the specified directory.
+echo                     Example: music -d C:\Users\bob\songs\ "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+echo.
+echo -r [directory_path]                  Play a randomly selected song from the specified directory.
+echo                     Example: music -r C:\Users\bob\songs\
+echo.
+echo -h, --help          Display this help message.
+echo.
+echo Note:
+echo - Optional directory argument is the folder path where the command will be executed. If not provided,
+echo   the default music directory specified in the script will be used.
+echo.
 exit /b
