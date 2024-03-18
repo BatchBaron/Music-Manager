@@ -108,7 +108,6 @@ SET /A "selectedSong=1 + %RANDOM% %% %songsCount%"
 set songsCount=0
      for %%b in ("%musicFolder%\*.mp3") do (
         set /a songsCount+=1
-    echo !songsCount!
         if !songsCount! equ %selectedSong% (
             echo playing random song!
              start /b "" "%%b"
