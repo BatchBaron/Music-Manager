@@ -2,7 +2,8 @@
 color 0f
 title Music Manager
 setlocal enabledelayedexpansion
-set "musicFolder=%userprofile%\desktop\nice\"
+set "musicFolder=%userprofile%\desktop\songs" :: Change the directory to where your music is located
+
 set "option=%~1"
 
 if /I "%option%"=="-list" (
@@ -59,6 +60,7 @@ exit /b
 
 :loopDirectory
 if not exist %musicFolder% (
+    echo path %musicFolder%
   set "newMusicFolderPath=%~1"
   if not exist !newMusicFolderPath! (
     echo Couldn't find folder at path: !newMusicFolderPath!.
