@@ -41,7 +41,7 @@ set "songName=%~1"
 
 for %%a in ("%musicFolder%\*.mp3") do (
     set "current=%%~nxa"
-    echo currently at !current!
+    @REM echo currently at !current!
     if "!current:%songName%=!" neq "!current!" (
         echo Playing song %%a
         start /b "" "%%a"
