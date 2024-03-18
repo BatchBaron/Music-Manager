@@ -2,7 +2,7 @@
 color 0f
 title Music Manager
 setlocal enabledelayedexpansion
-set "musicFolder=%userprofile%\desktop\nice"
+set "musicFolder=%userprofile%\desktop\nice\"
 set "option=%~1"
 
 if /I "%option%"=="-list" (
@@ -86,11 +86,15 @@ echo Listing all songs in the directory:
     exit /b
 
 :downloadSong 
+
 if not exist "%~dp0DownloadMP3.exe" (
     echo Couldn't find DownloadMP3.exe! Make sure you place it in the same folder as the batch script.
     exit /b
 )
-echo %*
+if "%2"=="" (
+"%~dp0DownloadMP3.exe" %musicFolder% %~1
+    exit /b
+)
 "%~dp0DownloadMP3.exe" %~1 %~2
 exit /b
 
