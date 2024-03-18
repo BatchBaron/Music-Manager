@@ -2,7 +2,7 @@
 color 0f
 title Music Manager
 setlocal enabledelayedexpansion
-set "musicFolder=%userprofile%\desktop\Songs"
+set "musicFolder=%userprofile%\desktop\nice"
 set "option=%~1"
 
 if /I "%option%"=="-list" (
@@ -17,6 +17,9 @@ exit /b
 ) else if /I "%option%"=="--help" (
    call :displayHelp
 exit /b
+) else if /I "%option%"=="-d" (
+    call :downloadSong %2 %3
+    exit /b
 )
 
 if /I "%option%"=="-p" (
@@ -79,9 +82,20 @@ echo Listing all songs in the directory:
     )
     exit /b
 
+:downloadSong 
+if not exist "%~dp0DownloadMP3.exe" (
+    echo Couldn't find DownloadMP3.exe! Make sure you place it in the same folder as the batch script.
+    exit /b
+)
+echo %*
+"%~dp0DownloadMP3.exe" %~1 %~2
+exit /b
+
+
 :displayHelp
 echo Usage: 
 echo -list, -l: List all songs in the directory
 echo -p [song name]: Play the specified song
 echo -h, --help: Display this help message
+echo -d [directory] [YouTube link]: Allows you to download a YouTube song and save it to the destined folder.
 exit /b
