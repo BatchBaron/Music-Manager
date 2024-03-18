@@ -28,7 +28,7 @@ The script is easy to use with command-line arguments. For example, to play a so
 music -p "Song Name" C:\Users\username\Music
 ```
 
-Replace "music" with the actual name of your batch script.
+Replace "Song Name" with the actual name of your Song.
 
 ## Note
 
