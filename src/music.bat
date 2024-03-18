@@ -20,6 +20,9 @@ exit /b
 ) else if /I "%option%"=="-d" (
     call :downloadSong %2 %3
     exit /b
+) else if /I "%option%"=="-r" (
+    call :playRandomSong
+    exit /b
 )
 
 if /I "%option%"=="-p" (
@@ -91,6 +94,25 @@ echo %*
 "%~dp0DownloadMP3.exe" %~1 %~2
 exit /b
 
+:playRandomSong
+set songsCount=0
+ for %%a in ("%musicFolder%\*.mp3") do (
+        set /a songsCount +=1
+    )   
+
+SET /A "selectedSong=1 + %RANDOM% %% %songsCount%"
+set songsCount=0
+     for %%b in ("%musicFolder%\*.mp3") do (
+        set /a songsCount+=1
+    echo !songsCount!
+        if !songsCount! equ %selectedSong% (
+            echo playing random song!
+             start /b "" "%%b"
+        exit /b
+        )
+    )
+    exit /b
+
 
 :displayHelp
 echo Usage: 
@@ -98,4 +120,5 @@ echo -list, -l: List all songs in the directory
 echo -p [song name]: Play the specified song
 echo -h, --help: Display this help message
 echo -d [directory] [YouTube link]: Allows you to download a YouTube song and save it to the destined folder.
+echo -r: Allows you to play random song in given directory
 exit /b
