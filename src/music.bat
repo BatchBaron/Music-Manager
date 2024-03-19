@@ -7,10 +7,10 @@ set "musicFolder=%userprofile%\desktop\songs" :: Change the directory to where y
 set "option=%~1"
 
 if /I "%option%"=="-list" (
-   call :loopDirectory %~2
+   call :loopDirectory %2
 exit /b
 ) else if /I "%option%"=="-l" (
-   call :loopDirectory %~2
+    call :loopDirectory %2
 exit /b
 ) else if /I "%option%"=="-h" (
    call :displayHelp
@@ -27,7 +27,7 @@ exit /b
 )
 
 if /I "%option%"=="-p" (
-  call :playMusic %~2 %~3
+  call :playMusic %2 %3
   exit /b
 )
 
@@ -52,7 +52,7 @@ if not "%~2"=="" (
 for %%a in ("%musicFolder%\*.mp3") do (
     set "current=%%~nxa"
     if "!current:%songName%=!" neq "!current!" (
-        echo Playing song %%a
+        echo Playing song: !current!
         start /b "" "%%a"
         exit /b
     )
@@ -62,11 +62,12 @@ exit /b
 
 :loopDirectory
 set "directoryPath=%~1"
+echo %directoryPath%
 if "%directoryPath%"=="" (
     set "directoryPath=%musicFolder%"
 )
 
-if not exist %directoryPath% (
+if not exist "%directoryPath%" (
     echo Couldn't find folder named '%directoryPath%'.
     exit /b
 )
