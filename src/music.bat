@@ -62,7 +62,6 @@ exit /b
 
 :loopDirectory
 set "directoryPath=%~1"
-echo %directoryPath%
 if "%directoryPath%"=="" (
     set "directoryPath=%musicFolder%"
 )
